@@ -586,8 +586,6 @@ class TetrisScorePanel(private val tetrisModel: TetrisModel) extends FlowPanel {
 
 class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
 
-  background = Color.BLACK
-
   private val cellXCoordBuffer = ArrayBuffer.fill(TetrisConstants.COLUMNS)(0)
 
   private val cellYCoordBuffer = ArrayBuffer.fill(TetrisConstants.ROWS)(0)
@@ -595,6 +593,8 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
   private var previousHeight = 0
 
   private var previousWidth = 0
+
+  background = Color.BLACK
 
   reactions += {
     case TetrisModelEvent() =>
