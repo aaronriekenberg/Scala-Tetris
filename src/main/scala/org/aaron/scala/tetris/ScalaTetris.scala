@@ -572,6 +572,8 @@ class TetrisScorePanel(private val tetrisModel: TetrisModel) extends FlowPanel {
 
   listenTo(tetrisModel)
 
+  handleTetrisModelEvent
+
   private def handleTetrisModelEvent {
     if (tetrisModel.paused) {
       linesLabel.text = "Paused Lines: " + tetrisModel.lines
@@ -579,8 +581,6 @@ class TetrisScorePanel(private val tetrisModel: TetrisModel) extends FlowPanel {
       linesLabel.text = "Lines: " + tetrisModel.lines
     }
   }
-
-  handleTetrisModelEvent
 
 }
 
@@ -619,6 +619,8 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
   listenTo(tetrisModel)
 
   listenTo(keys)
+
+  handleTetrisModelEvent
 
   private def handleTetrisModelEvent {
     repaint
