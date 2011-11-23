@@ -1,0 +1,9 @@
+Fun little program I wrote to learn a bit of scala-swing.
+
+Keys:
+
+Left Arrow - move piece left
+Right Arrow - move piece right
+Down Arrow - move piece down quickly
+Up Arrow - rotate piece
+Space Bar - pause game
