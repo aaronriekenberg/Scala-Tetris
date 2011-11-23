@@ -306,11 +306,34 @@ class RightLPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
 
 }
 
+object RandomTetrisPieceFactory {
+
+  private val random = new Random
+
+  def createRandomPiece(centerCoord: TetrisCoordinate): TetrisPiece = {
+    random.nextInt(7) match {
+      case 0 =>
+        new SquarePiece(centerCoord)
+      case 1 =>
+        new LinePiece(centerCoord)
+      case 2 =>
+        new TPiece(centerCoord)
+      case 3 =>
+        new LeftZPiece(centerCoord)
+      case 4 =>
+        new RightZPiece(centerCoord)
+      case 5 =>
+        new LeftLPiece(centerCoord)
+      case _ =>
+        new RightLPiece(centerCoord)
+    }
+  }
+
+}
+
 case class TetrisModelEvent extends Event
 
 class TetrisModel extends Publisher {
-
-  private val random = new Random
 
   private var deferTetrisModelEvents = false
 
@@ -471,22 +494,7 @@ class TetrisModel extends Publisher {
     val centerCoord =
       TetrisCoordinate(0, (TetrisConstants.COLUMNS / 2) - 1)
     val newPiece =
-      random.nextInt(7) match {
-        case 0 =>
-          new SquarePiece(centerCoord)
-        case 1 =>
-          new LinePiece(centerCoord)
-        case 2 =>
-          new TPiece(centerCoord)
-        case 3 =>
-          new LeftZPiece(centerCoord)
-        case 4 =>
-          new RightZPiece(centerCoord)
-        case 5 =>
-          new LeftLPiece(centerCoord)
-        case _ =>
-          new RightLPiece(centerCoord)
-      }
+      RandomTetrisPieceFactory.createRandomPiece(centerCoord)
     if (isPieceLocationValid(newPiece)) {
       currentPieceOption = Some(newPiece)
     } else {
