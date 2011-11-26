@@ -23,20 +23,22 @@ import scala.util.Random
 
 import javax.swing.Timer
 
+case class TetrisCoordinate(val row: Int, val column: Int)
+
 object TetrisConstants {
 
   val ROWS = 25
 
   val COLUMNS = 15
 
-}
+  def rowIsValid(row: Int): Boolean =
+    ((row >= 0) && (row <= (ROWS - 1)))
 
-class TetrisCoordinate(val row: Int, val column: Int)
+  def columnIsValid(column: Int): Boolean =
+    ((column >= 0) && (column <= (COLUMNS - 1)))
 
-object TetrisCoordinate {
-
-  def apply(row: Int, column: Int): TetrisCoordinate =
-    new TetrisCoordinate(row, column)
+  def coordIsValid(coord: TetrisCoordinate): Boolean =
+    (rowIsValid(coord.row) && columnIsValid(coord.column))
 
 }
 
@@ -308,10 +310,8 @@ class RightLPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
 
 object RandomTetrisPieceFactory {
 
-  private val random = new Random
-
   def createRandomPiece(centerCoord: TetrisCoordinate): TetrisPiece = {
-    random.nextInt(7) match {
+    Random.nextInt(7) match {
       case 0 =>
         new SquarePiece(centerCoord)
       case 1 =>
@@ -382,69 +382,61 @@ class TetrisModel extends Publisher {
   }
 
   def moveCurrentPieceDown {
-    if (gameRunning) {
-      if (currentPieceOption.isDefined) {
-        val currentPiece = currentPieceOption.get
-        val currentPieceMoved =
-          currentPiece.cloneWithNewCenterCoord(
-            TetrisCoordinate(
-              currentPiece.centerCoord.row + 1,
-              currentPiece.centerCoord.column))
-        if (isPieceLocationValid(currentPieceMoved)) {
-          currentPieceOption = Some(currentPieceMoved)
-        } else {
-          addPieceToStack(currentPiece)
-          currentPieceOption = None
-        }
+    if (gameRunning && currentPieceOption.isDefined) {
+      val currentPiece = currentPieceOption.get
+      val currentPieceMoved =
+        currentPiece.cloneWithNewCenterCoord(
+          TetrisCoordinate(
+            currentPiece.centerCoord.row + 1,
+            currentPiece.centerCoord.column))
+      if (isPieceLocationValid(currentPieceMoved)) {
+        currentPieceOption = Some(currentPieceMoved)
+      } else {
+        addPieceToStack(currentPiece)
+        currentPieceOption = None
+      }
+      publishTetrisModelEvent
+    }
+  }
+
+  def moveCurrentPieceLeft {
+    if (gameRunning && currentPieceOption.isDefined) {
+      val currentPiece = currentPieceOption.get
+      val currentPieceMoved =
+        currentPiece.cloneWithNewCenterCoord(
+          TetrisCoordinate(
+            currentPiece.centerCoord.row,
+            currentPiece.centerCoord.column - 1))
+      if (isPieceLocationValid(currentPieceMoved)) {
+        currentPieceOption = Some(currentPieceMoved)
         publishTetrisModelEvent
       }
     }
   }
 
-  def moveCurrentPieceLeft {
-    if (gameRunning) {
-      if (currentPieceOption.isDefined) {
-        val currentPiece = currentPieceOption.get
-        val currentPieceMoved =
-          currentPiece.cloneWithNewCenterCoord(
-            TetrisCoordinate(
-              currentPiece.centerCoord.row,
-              currentPiece.centerCoord.column - 1))
-        if (isPieceLocationValid(currentPieceMoved)) {
-          currentPieceOption = Some(currentPieceMoved)
-          publishTetrisModelEvent
-        }
-      }
-    }
-  }
-
   def moveCurrentPieceRight {
-    if (gameRunning) {
-      if (currentPieceOption.isDefined) {
-        val currentPiece = currentPieceOption.get
-        val currentPieceMoved =
-          currentPiece.cloneWithNewCenterCoord(
-            TetrisCoordinate(
-              currentPiece.centerCoord.row,
-              currentPiece.centerCoord.column + 1))
-        if (isPieceLocationValid(currentPieceMoved)) {
-          currentPieceOption = Some(currentPieceMoved)
-          publishTetrisModelEvent
-        }
+    if (gameRunning && currentPieceOption.isDefined) {
+      val currentPiece = currentPieceOption.get
+      val currentPieceMoved =
+        currentPiece.cloneWithNewCenterCoord(
+          TetrisCoordinate(
+            currentPiece.centerCoord.row,
+            currentPiece.centerCoord.column + 1))
+      if (isPieceLocationValid(currentPieceMoved)) {
+        currentPieceOption = Some(currentPieceMoved)
+        publishTetrisModelEvent
       }
     }
   }
 
   def rotateCurrentPiece {
-    if (gameRunning) {
-      if (currentPieceOption.isDefined) {
-        val currentPiece = currentPieceOption.get
-        val currentPieceRotated =
-          currentPiece.cloneWithNextOrientation
-        if (isPieceLocationValid(currentPieceRotated)) {
-          currentPieceOption = Some(currentPieceRotated)
-          publishTetrisModelEvent
-        }
+    if (gameRunning && currentPieceOption.isDefined) {
+      val currentPiece = currentPieceOption.get
+      val currentPieceRotated =
+        currentPiece.cloneWithNextOrientation
+      if (isPieceLocationValid(currentPieceRotated)) {
+        currentPieceOption = Some(currentPieceRotated)
+        publishTetrisModelEvent
       }
     }
   }
@@ -480,14 +472,13 @@ class TetrisModel extends Publisher {
         currentPiece.cellCoordinates.map(coord => Pair(coord, currentPiece.color))
     }
 
-    for (row <- 0 until TetrisConstants.ROWS) {
-      for (column <- 0 until TetrisConstants.COLUMNS) {
-        if (stackCells(row)(column).isDefined) {
-          drawableCellsBuffer +=
-            Pair(TetrisCoordinate(row, column), stackCells(row)(column).get)
-        }
-      }
-    }
+    for {
+      row <- 0 until TetrisConstants.ROWS
+      column <- 0 until TetrisConstants.COLUMNS
+      if stackCells(row)(column).isDefined
+    } drawableCellsBuffer +=
+      Pair(TetrisCoordinate(row, column),
+        stackCells(row)(column).get)
   }
 
   private def addNewPiece {
@@ -504,9 +495,10 @@ class TetrisModel extends Publisher {
   }
 
   private def addPieceToStack(piece: TetrisPiece) {
-    piece.cellCoordinates.foreach(centerCoord => {
-      stackCells(centerCoord.row)(centerCoord.column) = Some(piece.color)
-    })
+    piece.cellCoordinates.foreach(
+      centerCoord =>
+        stackCells(centerCoord.row)(centerCoord.column) =
+          Some(piece.color))
     handleFilledStackRows
   }
 
@@ -527,19 +519,9 @@ class TetrisModel extends Publisher {
 
   private def isPieceLocationValid(piece: TetrisPiece): Boolean = {
     val someCellIsInvalid = piece.cellCoordinates.exists(
-      coord => {
-        if ((coord.row < 0) ||
-          (coord.row > (TetrisConstants.ROWS - 1))) {
-          true
-        } else if ((coord.column < 0) ||
-          (coord.column > (TetrisConstants.COLUMNS - 1))) {
-          true
-        } else if (stackCells(coord.row)(coord.column).isDefined) {
-          true
-        } else {
-          false
-        }
-      })
+      coord =>
+        (!TetrisConstants.coordIsValid(coord)) ||
+          (stackCells(coord.row)(coord.column).isDefined))
     !someCellIsInvalid
   }
 
@@ -712,8 +694,7 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
   }
 
   private def paintCell(g: Graphics2D, coord: TetrisCoordinate, color: Color) {
-    if ((coord.row >= 0) && (coord.row < TetrisConstants.ROWS) &&
-      (coord.column >= 0) && (coord.column < TetrisConstants.COLUMNS)) {
+    if (TetrisConstants.coordIsValid(coord)) {
       val oldColor = g.getColor
       g.setColor(color)
       val cellRect = getCellRectangle(coord)
@@ -736,16 +717,18 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
 
 object ScalaTetris extends SimpleSwingApplication {
 
-  private val tetrisModel = new TetrisModel
-
   def top = new MainFrame {
 
     title = "Scala Tetris"
 
     preferredSize = new Dimension(300, 500)
 
+    private val tetrisModel = new TetrisModel
+
     private val tetrisPanel = new TetrisPanel(tetrisModel)
+
     contents = tetrisPanel
+
     tetrisPanel.setupFocus
 
     new Timer(250, new ActionListener {
