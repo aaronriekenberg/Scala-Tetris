@@ -310,24 +310,17 @@ class RightLPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
 
 object RandomTetrisPieceFactory {
 
-  def createRandomPiece(centerCoord: TetrisCoordinate): TetrisPiece = {
-    Random.nextInt(7) match {
-      case 0 =>
-        new SquarePiece(centerCoord)
-      case 1 =>
-        new LinePiece(centerCoord)
-      case 2 =>
-        new TPiece(centerCoord)
-      case 3 =>
-        new LeftZPiece(centerCoord)
-      case 4 =>
-        new RightZPiece(centerCoord)
-      case 5 =>
-        new LeftLPiece(centerCoord)
-      case _ =>
-        new RightLPiece(centerCoord)
-    }
-  }
+  private var pieceConstructors = Array(
+    (centerCoord: TetrisCoordinate) => new SquarePiece(centerCoord),
+    (centerCoord: TetrisCoordinate) => new LinePiece(centerCoord),
+    (centerCoord: TetrisCoordinate) => new TPiece(centerCoord),
+    (centerCoord: TetrisCoordinate) => new LeftZPiece(centerCoord),
+    (centerCoord: TetrisCoordinate) => new RightZPiece(centerCoord),
+    (centerCoord: TetrisCoordinate) => new LeftLPiece(centerCoord),
+    (centerCoord: TetrisCoordinate) => new RightLPiece(centerCoord))
+
+  def createRandomPiece(centerCoord: TetrisCoordinate): TetrisPiece =
+    pieceConstructors(Random.nextInt(pieceConstructors.length))(centerCoord)
 
 }
 
