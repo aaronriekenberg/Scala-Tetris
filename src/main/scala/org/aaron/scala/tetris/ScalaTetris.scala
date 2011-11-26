@@ -23,8 +23,6 @@ import scala.util.Random
 
 import javax.swing.Timer
 
-case class TetrisCoordinate(val row: Int, val column: Int)
-
 object TetrisConstants {
 
   val ROWS = 25
@@ -37,8 +35,12 @@ object TetrisConstants {
   def columnIsValid(column: Int): Boolean =
     ((column >= 0) && (column <= (COLUMNS - 1)))
 
-  def coordIsValid(coord: TetrisCoordinate): Boolean =
-    (rowIsValid(coord.row) && columnIsValid(coord.column))
+}
+
+case class TetrisCoordinate(val row: Int, val column: Int) {
+
+  def isValid: Boolean =
+    TetrisConstants.rowIsValid(row) && TetrisConstants.columnIsValid(column)
 
 }
 
@@ -513,7 +515,7 @@ class TetrisModel extends Publisher {
   private def isPieceLocationValid(piece: TetrisPiece): Boolean = {
     val someCellIsInvalid = piece.cellCoordinates.exists(
       coord =>
-        (!TetrisConstants.coordIsValid(coord)) ||
+        (!coord.isValid) ||
           (stackCells(coord.row)(coord.column).isDefined))
     !someCellIsInvalid
   }
@@ -687,7 +689,7 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
   }
 
   private def paintCell(g: Graphics2D, coord: TetrisCoordinate, color: Color) {
-    if (TetrisConstants.coordIsValid(coord)) {
+    if (coord.isValid) {
       val oldColor = g.getColor
       g.setColor(color)
       val cellRect = getCellRectangle(coord)
