@@ -61,10 +61,10 @@ trait TetrisPiece {
   def makeTetrisPiece(
     centerCoord: TetrisCoordinate, orientation: Int): TetrisPiece
 
-  def cloneWithNextOrientation =
+  def cloneWithNextOrientation: TetrisPiece =
     makeTetrisPiece(centerCoord, nextOrientation)
 
-  def cloneWithNewCenterCoord(newCenterCoord: TetrisCoordinate) =
+  def cloneWithNewCenterCoord(newCenterCoord: TetrisCoordinate): TetrisPiece =
     makeTetrisPiece(newCenterCoord, orientation)
 
 }
