@@ -44,7 +44,7 @@ case class TetrisCoordinate(val row: Int, val column: Int) {
 
 }
 
-trait TetrisPiece {
+abstract class TetrisPiece {
 
   def centerCoord: TetrisCoordinate
 
@@ -689,15 +689,13 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
   }
 
   private def paintCell(g: Graphics2D, coord: TetrisCoordinate, color: Color) {
-    if (coord.isValid) {
-      val oldColor = g.getColor
-      g.setColor(color)
-      val cellRect = getCellRectangle(coord)
-      g.fillRect(cellRect.x, cellRect.y, cellRect.width, cellRect.height)
-      g.setColor(Color.BLACK)
-      g.drawRect(cellRect.x, cellRect.y, cellRect.width, cellRect.height)
-      g.setColor(oldColor)
-    }
+    val oldColor = g.getColor
+    g.setColor(color)
+    val cellRect = getCellRectangle(coord)
+    g.fillRect(cellRect.x, cellRect.y, cellRect.width, cellRect.height)
+    g.setColor(Color.BLACK)
+    g.drawRect(cellRect.x, cellRect.y, cellRect.width, cellRect.height)
+    g.setColor(oldColor)
   }
 
   override def paintComponent(g: Graphics2D) {
