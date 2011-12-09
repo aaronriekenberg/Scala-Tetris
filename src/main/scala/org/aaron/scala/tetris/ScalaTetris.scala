@@ -37,6 +37,10 @@ object TetrisConstants {
 
 }
 
+/**
+ * A coordinate in the Tetris model.
+ * (0, 0) is the top-most and left-most cell in the model.
+ */
 case class TetrisCoordinate(val row: Int, val column: Int) {
 
   def isValid: Boolean =
@@ -502,8 +506,8 @@ class TetrisModel extends Publisher {
     while (row >= 0) {
       val rowIsFull = !stackCells(row).exists(_.isEmpty)
       if (rowIsFull) {
-        stackCells.remove(row, 1)
-        stackCells.insert(0,
+        stackCells.remove(row)
+        stackCells.prepend(
           ArrayBuffer.fill[Option[Color]](TetrisConstants.COLUMNS)(None))
         numLines += 1
       } else {
@@ -512,13 +516,11 @@ class TetrisModel extends Publisher {
     }
   }
 
-  private def isPieceLocationValid(piece: TetrisPiece): Boolean = {
-    val someCellIsInvalid = piece.cellCoordinates.exists(
+  private def isPieceLocationValid(piece: TetrisPiece): Boolean =
+    !piece.cellCoordinates.exists(
       coord =>
-        (!coord.isValid) ||
-          (stackCells(coord.row)(coord.column).isDefined))
-    !someCellIsInvalid
-  }
+        ((!coord.isValid) ||
+          (stackCells(coord.row)(coord.column).isDefined)))
 
 }
 
