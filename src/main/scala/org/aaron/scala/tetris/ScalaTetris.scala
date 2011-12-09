@@ -341,8 +341,7 @@ class TetrisModel extends Publisher {
   private val stackCells = ArrayBuffer.fill(TetrisConstants.ROWS)(
     ArrayBuffer.fill[Option[Color]](TetrisConstants.COLUMNS)(None))
 
-  private val drawableCellsBuffer =
-    new ArrayBuffer[Pair[TetrisCoordinate, Color]]((TetrisConstants.ROWS * TetrisConstants.COLUMNS) + 4)
+  private val drawableCellsBuffer = ArrayBuffer.empty[Pair[TetrisCoordinate, Color]]
 
   private var numLines = 0
 
