@@ -316,7 +316,7 @@ class RightLPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
 
 object RandomTetrisPieceFactory {
 
-  private var pieceConstructors = Array(
+  private val pieceConstructors = Array(
     (centerCoord: TetrisCoordinate) => new SquarePiece(centerCoord),
     (centerCoord: TetrisCoordinate) => new LinePiece(centerCoord),
     (centerCoord: TetrisCoordinate) => new TPiece(centerCoord),
