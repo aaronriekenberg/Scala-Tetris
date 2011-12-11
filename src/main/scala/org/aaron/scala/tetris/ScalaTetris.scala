@@ -11,13 +11,18 @@ import scala.collection.mutable.ArrayBuffer
 import scala.swing.event.Event
 import scala.swing.event.Key
 import scala.swing.event.KeyPressed
+import scala.swing.Action
 import scala.swing.BorderPanel
 import scala.swing.Dialog
 import scala.swing.FlowPanel
 import scala.swing.Label
 import scala.swing.MainFrame
+import scala.swing.Menu
+import scala.swing.MenuBar
+import scala.swing.MenuItem
 import scala.swing.Panel
 import scala.swing.Publisher
+import scala.swing.Separator
 import scala.swing.SimpleSwingApplication
 import scala.util.Random
 
@@ -719,9 +724,18 @@ object ScalaTetris extends SimpleSwingApplication {
 
     title = "Scala Tetris"
 
-    preferredSize = new Dimension(300, 500)
+    preferredSize = new Dimension(300, 550)
 
     contents = tetrisPanel
+
+    menuBar = new MenuBar {
+      contents += new Menu("Game") {
+        contents += new MenuItem(Action("Pause") { tetrisModel.togglePause })
+        contents += new MenuItem(Action("Reset") { tetrisModel.reset })
+        contents += new Separator
+        contents += new MenuItem(Action("Exit") { sys.exit(0) })
+      }
+    }
 
     tetrisPanel.setupFocus
 
