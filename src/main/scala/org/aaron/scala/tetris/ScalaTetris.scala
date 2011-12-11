@@ -713,13 +713,13 @@ object ScalaTetris extends SimpleSwingApplication {
 
   def top = new MainFrame {
 
-    title = "Scala Tetris"
-
-    preferredSize = new Dimension(300, 500)
-
     private val tetrisModel = new TetrisModel
 
     private val tetrisPanel = new TetrisPanel(tetrisModel)
+
+    title = "Scala Tetris"
+
+    preferredSize = new Dimension(300, 500)
 
     contents = tetrisPanel
 
