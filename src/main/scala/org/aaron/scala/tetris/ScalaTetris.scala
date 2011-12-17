@@ -343,8 +343,8 @@ class TetrisModel extends Publisher {
 
   private var currentPieceOption: Option[TetrisPiece] = None
 
-  private val stackCells = ArrayBuffer.fill(TetrisConstants.ROWS)(
-    ArrayBuffer.fill[Option[Color]](TetrisConstants.COLUMNS)(None))
+  private val stackCells =
+    ArrayBuffer.fill[Option[Color]](TetrisConstants.ROWS, TetrisConstants.COLUMNS)(None)
 
   private val drawableCellsBuffer = ArrayBuffer.empty[Pair[TetrisCoordinate, Color]]
 
@@ -358,8 +358,8 @@ class TetrisModel extends Publisher {
     deferTetrisModelEvents = false
     currentPieceOption = None
     stackCells.clear
-    val newStackCells = ArrayBuffer.fill(TetrisConstants.ROWS)(
-      ArrayBuffer.fill[Option[Color]](TetrisConstants.COLUMNS)(None))
+    val newStackCells =
+      ArrayBuffer.fill[Option[Color]](TetrisConstants.ROWS, TetrisConstants.COLUMNS)(None)
     newStackCells.copyToBuffer(stackCells)
     drawableCellsBuffer.clear
     numLines = 0
