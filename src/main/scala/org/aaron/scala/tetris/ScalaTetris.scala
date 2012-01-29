@@ -682,8 +682,6 @@ class TetrisController extends Reactor {
 
   val tetrisPanel = new TetrisPanel(tetrisModel)
 
-  listenTo(tetrisPanel.keys)
-
   reactions += {
     case KeyPressed(_, Key.Down, _, _) =>
       downKeyPressed
@@ -700,6 +698,8 @@ class TetrisController extends Reactor {
     case KeyPressed(_, Key.Space, _, _) =>
       spaceKeyPressed
   }
+
+  listenTo(tetrisPanel.keys)
 
   new Timer(250, new ActionListener {
     def actionPerformed(e: ActionEvent) {
