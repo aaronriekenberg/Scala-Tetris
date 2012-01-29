@@ -6,7 +6,6 @@ import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Rectangle
-
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.event.Event
 import scala.swing.event.Key
@@ -25,8 +24,8 @@ import scala.swing.Publisher
 import scala.swing.Separator
 import scala.swing.SimpleSwingApplication
 import scala.util.Random
-
 import javax.swing.Timer
+import scala.swing.Reactor
 
 object TetrisConstants {
 
@@ -582,26 +581,9 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
   reactions += {
     case TetrisModelEvent() =>
       handleTetrisModelEvent
-
-    case KeyPressed(_, Key.Down, _, _) =>
-      downKeyPressed
-
-    case KeyPressed(_, Key.Left, _, _) =>
-      leftKeyPressed
-
-    case KeyPressed(_, Key.Right, _, _) =>
-      rightKeyPressed
-
-    case KeyPressed(_, Key.Up, _, _) =>
-      upKeyPressed
-
-    case KeyPressed(_, Key.Space, _, _) =>
-      spaceKeyPressed
   }
 
   listenTo(tetrisModel)
-
-  listenTo(keys)
 
   handleTetrisModelEvent
 
@@ -611,26 +593,6 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
       Dialog.showMessage(parent = this, message = "Game Over", title = "Game Over")
       tetrisModel.reset
     }
-  }
-
-  private def downKeyPressed {
-    tetrisModel.moveCurrentPieceDown
-  }
-
-  private def leftKeyPressed {
-    tetrisModel.moveCurrentPieceLeft
-  }
-
-  private def rightKeyPressed {
-    tetrisModel.moveCurrentPieceRight
-  }
-
-  private def upKeyPressed {
-    tetrisModel.rotateCurrentPiece
-  }
-
-  private def spaceKeyPressed {
-    tetrisModel.togglePause
   }
 
   private def recomputeCellLocations {
@@ -714,36 +676,93 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
   }
 }
 
+class TetrisController extends Reactor {
+
+  val tetrisModel = new TetrisModel
+
+  val tetrisPanel = new TetrisPanel(tetrisModel)
+
+  listenTo(tetrisPanel.keys)
+
+  reactions += {
+    case KeyPressed(_, Key.Down, _, _) =>
+      downKeyPressed
+
+    case KeyPressed(_, Key.Left, _, _) =>
+      leftKeyPressed
+
+    case KeyPressed(_, Key.Right, _, _) =>
+      rightKeyPressed
+
+    case KeyPressed(_, Key.Up, _, _) =>
+      upKeyPressed
+
+    case KeyPressed(_, Key.Space, _, _) =>
+      spaceKeyPressed
+  }
+
+  new Timer(250, new ActionListener {
+    def actionPerformed(e: ActionEvent) {
+      tetrisModel.periodicUpdate
+    }
+  }).start
+
+  private def downKeyPressed {
+    tetrisModel.moveCurrentPieceDown
+  }
+
+  private def leftKeyPressed {
+    tetrisModel.moveCurrentPieceLeft
+  }
+
+  private def rightKeyPressed {
+    tetrisModel.moveCurrentPieceRight
+  }
+
+  private def upKeyPressed {
+    tetrisModel.rotateCurrentPiece
+  }
+
+  private def spaceKeyPressed {
+    tetrisModel.togglePause
+  }
+
+  def togglePause {
+    tetrisModel.togglePause
+  }
+
+  def resetGame {
+    tetrisModel.reset
+  }
+
+  def setupFocus {
+    tetrisPanel.requestFocus
+  }
+
+}
+
 object ScalaTetris extends SimpleSwingApplication {
 
   def top = new MainFrame {
-
-    private val tetrisModel = new TetrisModel
-
-    private val tetrisPanel = new TetrisPanel(tetrisModel)
 
     title = "Scala Tetris"
 
     preferredSize = new Dimension(300, 550)
 
-    contents = tetrisPanel
+    private val tetrisContoller = new TetrisController
+
+    contents = tetrisContoller.tetrisPanel
+
+    tetrisContoller.setupFocus
 
     menuBar = new MenuBar {
       contents += new Menu("Game") {
-        contents += new MenuItem(Action("Pause") { tetrisModel.togglePause })
-        contents += new MenuItem(Action("Reset") { tetrisModel.reset })
+        contents += new MenuItem(Action("Pause") { tetrisContoller.togglePause })
+        contents += new MenuItem(Action("Reset") { tetrisContoller.resetGame })
         contents += new Separator
         contents += new MenuItem(Action("Exit") { sys.exit(0) })
       }
     }
-
-    tetrisPanel.setupFocus
-
-    new Timer(250, new ActionListener {
-      def actionPerformed(e: ActionEvent) {
-        tetrisModel.periodicUpdate
-      }
-    }).start
 
   }
 
