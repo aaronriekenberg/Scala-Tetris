@@ -6,6 +6,7 @@ import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Rectangle
+
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.event.Event
 import scala.swing.event.Key
@@ -21,23 +22,22 @@ import scala.swing.MenuBar
 import scala.swing.MenuItem
 import scala.swing.Panel
 import scala.swing.Publisher
+import scala.swing.Reactor
 import scala.swing.Separator
 import scala.swing.SimpleSwingApplication
 import scala.util.Random
+
 import javax.swing.Timer
-import scala.swing.Reactor
 
 object TetrisConstants {
 
-  val ROWS = 25
+  val rows = 25
 
-  val COLUMNS = 15
+  val columns = 15
 
-  def rowIsValid(row: Int): Boolean =
-    ((row >= 0) && (row <= (ROWS - 1)))
+  val validRows = 0 until rows
 
-  def columnIsValid(column: Int): Boolean =
-    ((column >= 0) && (column <= (COLUMNS - 1)))
+  val validColumns = 0 until columns
 
 }
 
@@ -48,7 +48,8 @@ object TetrisConstants {
 case class TetrisCoordinate(val row: Int, val column: Int) {
 
   def isValid: Boolean =
-    TetrisConstants.rowIsValid(row) && TetrisConstants.columnIsValid(column)
+    TetrisConstants.validRows.contains(row) &&
+      TetrisConstants.validColumns.contains(column)
 
 }
 
@@ -343,7 +344,7 @@ class TetrisModel extends Publisher {
   private var currentPieceOption: Option[TetrisPiece] = None
 
   private val stackCells =
-    ArrayBuffer.fill[Option[Color]](TetrisConstants.ROWS, TetrisConstants.COLUMNS)(None)
+    ArrayBuffer.fill[Option[Color]](TetrisConstants.rows, TetrisConstants.columns)(None)
 
   private val drawableCellsBuffer = ArrayBuffer.empty[Pair[TetrisCoordinate, Color]]
 
@@ -358,7 +359,7 @@ class TetrisModel extends Publisher {
     currentPieceOption = None
     stackCells.clear
     val newStackCells =
-      ArrayBuffer.fill[Option[Color]](TetrisConstants.ROWS, TetrisConstants.COLUMNS)(None)
+      ArrayBuffer.fill[Option[Color]](TetrisConstants.rows, TetrisConstants.columns)(None)
     newStackCells.copyToBuffer(stackCells)
     drawableCellsBuffer.clear
     numLines = 0
@@ -475,8 +476,8 @@ class TetrisModel extends Publisher {
     }
 
     for {
-      row <- 0 until TetrisConstants.ROWS
-      column <- 0 until TetrisConstants.COLUMNS
+      row <- 0 until TetrisConstants.rows
+      column <- 0 until TetrisConstants.columns
       if stackCells(row)(column).isDefined
     } drawableCellsBuffer +=
       Pair(TetrisCoordinate(row, column),
@@ -485,7 +486,7 @@ class TetrisModel extends Publisher {
 
   private def addNewPiece {
     val centerCoord =
-      TetrisCoordinate(0, (TetrisConstants.COLUMNS / 2) - 1)
+      TetrisCoordinate(0, (TetrisConstants.columns / 2) - 1)
     val newPiece =
       RandomTetrisPieceFactory.createRandomPiece(centerCoord)
     if (isPieceLocationValid(newPiece)) {
@@ -505,13 +506,13 @@ class TetrisModel extends Publisher {
   }
 
   private def handleFilledStackRows {
-    var row = TetrisConstants.ROWS - 1
+    var row = TetrisConstants.rows - 1
     while (row >= 0) {
       val rowIsFull = !stackCells(row).exists(_.isEmpty)
       if (rowIsFull) {
         stackCells.remove(row)
         stackCells.prepend(
-          ArrayBuffer.fill[Option[Color]](TetrisConstants.COLUMNS)(None))
+          ArrayBuffer.fill[Option[Color]](TetrisConstants.columns)(None))
         numLines += 1
       } else {
         row -= 1
@@ -568,9 +569,9 @@ class TetrisScorePanel(private val tetrisModel: TetrisModel) extends FlowPanel {
 
 class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
 
-  private val cellXCoordBuffer = ArrayBuffer.fill(TetrisConstants.COLUMNS)(0)
+  private val cellXCoordBuffer = ArrayBuffer.fill(TetrisConstants.columns)(0)
 
-  private val cellYCoordBuffer = ArrayBuffer.fill(TetrisConstants.ROWS)(0)
+  private val cellYCoordBuffer = ArrayBuffer.fill(TetrisConstants.rows)(0)
 
   private var previousHeight = 0
 
@@ -599,9 +600,9 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
     if ((size.width != previousWidth) || (size.height != previousHeight)) {
       cellXCoordBuffer.clear
       var currentXCoord = 0
-      val normalWidthPixels = size.width / TetrisConstants.COLUMNS
-      val extraWidthPixels = size.width % TetrisConstants.COLUMNS
-      for (i <- 0 until TetrisConstants.COLUMNS) {
+      val normalWidthPixels = size.width / TetrisConstants.columns
+      val extraWidthPixels = size.width % TetrisConstants.columns
+      for (i <- 0 until TetrisConstants.columns) {
         cellXCoordBuffer += currentXCoord
         val width =
           if (i < extraWidthPixels) {
@@ -614,9 +615,9 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
 
       cellYCoordBuffer.clear
       var currentYCoord = 0
-      val normalHeightPixels = size.height / TetrisConstants.ROWS
-      val extraHeightPixels = size.height % TetrisConstants.ROWS
-      for (i <- 0 until TetrisConstants.ROWS) {
+      val normalHeightPixels = size.height / TetrisConstants.rows
+      val extraHeightPixels = size.height % TetrisConstants.rows
+      for (i <- 0 until TetrisConstants.rows) {
         cellYCoordBuffer += currentYCoord
         val height =
           if (i < extraHeightPixels) {
@@ -639,7 +640,7 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
 
     rectangle.x = cellXCoordBuffer(column)
     rectangle.width =
-      if (column >= (TetrisConstants.COLUMNS - 1)) {
+      if (column >= (TetrisConstants.columns - 1)) {
         size.width - cellXCoordBuffer(column)
       } else {
         cellXCoordBuffer(column + 1) - cellXCoordBuffer(column)
@@ -647,7 +648,7 @@ class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
 
     rectangle.y = cellYCoordBuffer(row)
     rectangle.height =
-      if (row >= (TetrisConstants.ROWS - 1)) {
+      if (row >= (TetrisConstants.rows - 1)) {
         size.height - cellYCoordBuffer(row)
       } else {
         cellYCoordBuffer(row + 1) - cellYCoordBuffer(row)
