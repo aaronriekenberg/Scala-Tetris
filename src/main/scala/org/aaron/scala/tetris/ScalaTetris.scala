@@ -542,7 +542,7 @@ class TetrisPanel(tetrisModel: TetrisModel) extends BorderPanel {
 
 }
 
-class TetrisScorePanel(private val tetrisModel: TetrisModel) extends FlowPanel {
+class TetrisScorePanel(tetrisModel: TetrisModel) extends FlowPanel {
 
   private val linesLabel = new Label
 
@@ -567,7 +567,7 @@ class TetrisScorePanel(private val tetrisModel: TetrisModel) extends FlowPanel {
 
 }
 
-class TetrisGamePanel(private val tetrisModel: TetrisModel) extends Panel {
+class TetrisGamePanel(tetrisModel: TetrisModel) extends Panel {
 
   private val cellXCoordBuffer = ArrayBuffer.fill(TetrisConstants.numColumns)(0)
 
@@ -685,19 +685,19 @@ class TetrisController extends Reactor {
 
   reactions += {
     case KeyPressed(_, Key.Down, _, _) =>
-      downKeyPressed
+      tetrisModel.moveCurrentPieceDown
 
     case KeyPressed(_, Key.Left, _, _) =>
-      leftKeyPressed
+      tetrisModel.moveCurrentPieceLeft
 
     case KeyPressed(_, Key.Right, _, _) =>
-      rightKeyPressed
+      tetrisModel.moveCurrentPieceRight
 
     case KeyPressed(_, Key.Up, _, _) =>
-      upKeyPressed
+      tetrisModel.rotateCurrentPiece
 
     case KeyPressed(_, Key.Space, _, _) =>
-      spaceKeyPressed
+      tetrisModel.togglePause
   }
 
   listenTo(tetrisPanel.keys)
@@ -707,26 +707,6 @@ class TetrisController extends Reactor {
       tetrisModel.periodicUpdate
     }
   }).start
-
-  private def downKeyPressed {
-    tetrisModel.moveCurrentPieceDown
-  }
-
-  private def leftKeyPressed {
-    tetrisModel.moveCurrentPieceLeft
-  }
-
-  private def rightKeyPressed {
-    tetrisModel.moveCurrentPieceRight
-  }
-
-  private def upKeyPressed {
-    tetrisModel.rotateCurrentPiece
-  }
-
-  private def spaceKeyPressed {
-    tetrisModel.togglePause
-  }
 
   def togglePause {
     tetrisModel.togglePause
