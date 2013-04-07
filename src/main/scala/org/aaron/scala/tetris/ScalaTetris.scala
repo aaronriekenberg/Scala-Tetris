@@ -1,16 +1,13 @@
 package org.aaron.scala.tetris
 
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Rectangle
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
 
 import scala.collection.mutable.ArrayBuffer
-import scala.swing.event.Event
-import scala.swing.event.Key
-import scala.swing.event.KeyPressed
 import scala.swing.Action
 import scala.swing.BorderPanel
 import scala.swing.Dialog
@@ -25,6 +22,9 @@ import scala.swing.Publisher
 import scala.swing.Reactor
 import scala.swing.Separator
 import scala.swing.SimpleSwingApplication
+import scala.swing.event.Event
+import scala.swing.event.Key
+import scala.swing.event.KeyPressed
 import scala.util.Random
 
 import javax.swing.Timer
@@ -462,7 +462,7 @@ class TetrisModel extends Publisher {
   private def publishTetrisModelEvent {
     if (!deferTetrisModelEvents) {
       updateDrawableCells
-      publish(new TetrisModelEvent)
+      publish(TetrisModelEvent())
     }
   }
 
