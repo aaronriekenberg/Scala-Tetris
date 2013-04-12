@@ -4,6 +4,7 @@ Keys:
 
 Left Arrow - move piece left
 Right Arrow - move piece right
-Down Arrow - move piece down quickly
+Down Arrow - move piece down
 Up Arrow - rotate piece
-Space Bar - pause game
+Space Bar - drop current piece
+P Key - pause game
