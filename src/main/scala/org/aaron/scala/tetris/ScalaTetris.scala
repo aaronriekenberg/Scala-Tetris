@@ -57,6 +57,10 @@ abstract class TetrisPiece {
 
   def centerCoord: TetrisCoordinate
 
+  def centerRow: Int = centerCoord.row
+
+  def centerColumn: Int = centerCoord.column
+
   def orientation: Int
 
   def color: Color
@@ -85,10 +89,10 @@ class SquarePiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
 
   val cellCoordinates =
     List(
-      TetrisCoordinate(centerCoord.row, centerCoord.column),
-      TetrisCoordinate(centerCoord.row + 1, centerCoord.column),
-      TetrisCoordinate(centerCoord.row, centerCoord.column + 1),
-      TetrisCoordinate(centerCoord.row + 1, centerCoord.column + 1))
+      TetrisCoordinate(centerRow, centerColumn),
+      TetrisCoordinate(centerRow + 1, centerColumn),
+      TetrisCoordinate(centerRow, centerColumn + 1),
+      TetrisCoordinate(centerRow + 1, centerColumn + 1))
 
   val numOrientations = 1
 
@@ -106,28 +110,28 @@ class LinePiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
     orientation match {
       case 0 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 2, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 3, centerCoord.column))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow + 1, centerColumn),
+          TetrisCoordinate(centerRow + 2, centerColumn),
+          TetrisCoordinate(centerRow + 3, centerColumn))
       case 1 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 1),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 2),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 3))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn + 1),
+          TetrisCoordinate(centerRow, centerColumn + 2),
+          TetrisCoordinate(centerRow, centerColumn + 3))
       case 2 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 2, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 3, centerCoord.column))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow - 1, centerColumn),
+          TetrisCoordinate(centerRow - 2, centerColumn),
+          TetrisCoordinate(centerRow - 3, centerColumn))
       case _ =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 1),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 2),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 3))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn - 1),
+          TetrisCoordinate(centerRow, centerColumn - 2),
+          TetrisCoordinate(centerRow, centerColumn - 3))
     }
   }
 
@@ -147,28 +151,28 @@ class TPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
     orientation match {
       case 0 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 1),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 1),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn + 1),
+          TetrisCoordinate(centerRow, centerColumn - 1),
+          TetrisCoordinate(centerRow + 1, centerColumn))
       case 1 =>
         List(
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 1))
+          TetrisCoordinate(centerRow - 1, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow + 1, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn + 1))
       case 2 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 1),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 1),
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn + 1),
+          TetrisCoordinate(centerRow, centerColumn - 1),
+          TetrisCoordinate(centerRow - 1, centerColumn))
       case _ =>
         List(
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 1))
+          TetrisCoordinate(centerRow - 1, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow + 1, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn - 1))
     }
   }
 
@@ -188,16 +192,16 @@ class LeftZPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
     orientation match {
       case 0 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 1),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column + 1))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn - 1),
+          TetrisCoordinate(centerRow + 1, centerColumn),
+          TetrisCoordinate(centerRow + 1, centerColumn + 1))
       case _ =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 1),
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column + 1))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow + 1, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn + 1),
+          TetrisCoordinate(centerRow - 1, centerColumn + 1))
     }
   }
 
@@ -217,16 +221,16 @@ class RightZPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
     orientation match {
       case 0 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 1),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column - 1))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn + 1),
+          TetrisCoordinate(centerRow + 1, centerColumn),
+          TetrisCoordinate(centerRow + 1, centerColumn - 1))
       case _ =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 1),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column + 1))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow - 1, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn + 1),
+          TetrisCoordinate(centerRow + 1, centerColumn + 1))
     }
   }
 
@@ -246,28 +250,28 @@ class LeftLPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
     orientation match {
       case 0 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 2, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 2, centerCoord.column - 1))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow + 1, centerColumn),
+          TetrisCoordinate(centerRow + 2, centerColumn),
+          TetrisCoordinate(centerRow + 2, centerColumn - 1))
       case 1 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 1),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 2),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column + 2))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn + 1),
+          TetrisCoordinate(centerRow, centerColumn + 2),
+          TetrisCoordinate(centerRow + 1, centerColumn + 2))
       case 2 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 2, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 2, centerCoord.column + 1))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow - 1, centerColumn),
+          TetrisCoordinate(centerRow - 2, centerColumn),
+          TetrisCoordinate(centerRow - 2, centerColumn + 1))
       case _ =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 1),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 2),
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column - 2))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn - 1),
+          TetrisCoordinate(centerRow, centerColumn - 2),
+          TetrisCoordinate(centerRow - 1, centerColumn - 2))
     }
   }
 
@@ -287,28 +291,28 @@ class RightLPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
     orientation match {
       case 0 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 2, centerCoord.column),
-          TetrisCoordinate(centerCoord.row + 2, centerCoord.column + 1))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow + 1, centerColumn),
+          TetrisCoordinate(centerRow + 2, centerColumn),
+          TetrisCoordinate(centerRow + 2, centerColumn + 1))
       case 1 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 1),
-          TetrisCoordinate(centerCoord.row, centerCoord.column + 2),
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column + 2))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn + 1),
+          TetrisCoordinate(centerRow, centerColumn + 2),
+          TetrisCoordinate(centerRow - 1, centerColumn + 2))
       case 2 =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 1, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 2, centerCoord.column),
-          TetrisCoordinate(centerCoord.row - 2, centerCoord.column - 1))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow - 1, centerColumn),
+          TetrisCoordinate(centerRow - 2, centerColumn),
+          TetrisCoordinate(centerRow - 2, centerColumn - 1))
       case _ =>
         List(
-          TetrisCoordinate(centerCoord.row, centerCoord.column),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 1),
-          TetrisCoordinate(centerCoord.row, centerCoord.column - 2),
-          TetrisCoordinate(centerCoord.row + 1, centerCoord.column - 2))
+          TetrisCoordinate(centerRow, centerColumn),
+          TetrisCoordinate(centerRow, centerColumn - 1),
+          TetrisCoordinate(centerRow, centerColumn - 2),
+          TetrisCoordinate(centerRow + 1, centerColumn - 2))
     }
   }
 
@@ -390,8 +394,8 @@ class TetrisModel extends Publisher {
       val currentPieceMoved =
         currentPiece.cloneWithNewCenterCoord(
           TetrisCoordinate(
-            currentPiece.centerCoord.row + 1,
-            currentPiece.centerCoord.column))
+            currentPiece.centerRow + 1,
+            currentPiece.centerColumn))
       if (isPieceLocationValid(currentPieceMoved)) {
         currentPieceOption = Some(currentPieceMoved)
       } else {
@@ -402,14 +406,28 @@ class TetrisModel extends Publisher {
     }
   }
 
+  def dropCurrentPiece {
+    if (gameRunning) {
+      deferTetrisModelEvents = true
+
+      while (currentPieceOption.isDefined) {
+        moveCurrentPieceDown
+      }
+
+      deferTetrisModelEvents = false
+
+      publishTetrisModelEvent
+    }
+  }
+
   def moveCurrentPieceLeft {
     if (gameRunning && currentPieceOption.isDefined) {
       val currentPiece = currentPieceOption.get
       val currentPieceMoved =
         currentPiece.cloneWithNewCenterCoord(
           TetrisCoordinate(
-            currentPiece.centerCoord.row,
-            currentPiece.centerCoord.column - 1))
+            currentPiece.centerRow,
+            currentPiece.centerColumn - 1))
       if (isPieceLocationValid(currentPieceMoved)) {
         currentPieceOption = Some(currentPieceMoved)
         publishTetrisModelEvent
@@ -423,8 +441,8 @@ class TetrisModel extends Publisher {
       val currentPieceMoved =
         currentPiece.cloneWithNewCenterCoord(
           TetrisCoordinate(
-            currentPiece.centerCoord.row,
-            currentPiece.centerCoord.column + 1))
+            currentPiece.centerRow,
+            currentPiece.centerColumn + 1))
       if (isPieceLocationValid(currentPieceMoved)) {
         currentPieceOption = Some(currentPieceMoved)
         publishTetrisModelEvent
@@ -499,8 +517,8 @@ class TetrisModel extends Publisher {
 
   private def addPieceToStack(piece: TetrisPiece) {
     piece.cellCoordinates.foreach(
-      centerCoord =>
-        stackCells(centerCoord.row)(centerCoord.column) =
+      coord =>
+        stackCells(coord.row)(coord.column) =
           Some(piece.color))
     handleFilledStackRows
   }
@@ -687,6 +705,9 @@ class TetrisController extends Reactor {
     case KeyPressed(_, Key.Down, _, _) =>
       tetrisModel.moveCurrentPieceDown
 
+    case KeyPressed(_, Key.Space, _, _) =>
+      tetrisModel.dropCurrentPiece
+
     case KeyPressed(_, Key.Left, _, _) =>
       tetrisModel.moveCurrentPieceLeft
 
@@ -696,7 +717,7 @@ class TetrisController extends Reactor {
     case KeyPressed(_, Key.Up, _, _) =>
       tetrisModel.rotateCurrentPiece
 
-    case KeyPressed(_, Key.Space, _, _) =>
+    case KeyPressed(_, Key.P, _, _) =>
       tetrisModel.togglePause
   }
 
