@@ -343,7 +343,7 @@ case class TetrisModelEvent extends Event
 
 class TetrisModel extends Publisher {
 
-  private var deferTetrisModelEvents = false
+  private var deferPublishCount = 0
 
   private var currentPieceOption: Option[TetrisPiece] = None
 
@@ -359,7 +359,7 @@ class TetrisModel extends Publisher {
   private var isGameOver = false
 
   def reset {
-    deferTetrisModelEvents = false
+    deferPublishCount = 0
     currentPieceOption = None
     stackCells.clear
     val newStackCells =
@@ -374,97 +374,94 @@ class TetrisModel extends Publisher {
 
   def periodicUpdate {
     if (gameRunning) {
-      deferTetrisModelEvents = true
-
-      if (currentPieceOption.isEmpty) {
-        addNewPiece
-      } else {
-        moveCurrentPieceDown
+      executeAndPublish {
+        if (currentPieceOption.isEmpty) {
+          addNewPiece
+        } else {
+          moveCurrentPieceDown
+        }
       }
-
-      deferTetrisModelEvents = false
-
-      publishTetrisModelEvent
     }
   }
 
   def moveCurrentPieceDown {
     if (gameRunning && currentPieceOption.isDefined) {
-      val currentPiece = currentPieceOption.get
-      val currentPieceMoved =
-        currentPiece.cloneWithNewCenterCoord(
-          TetrisCoordinate(
-            currentPiece.centerRow + 1,
-            currentPiece.centerColumn))
-      if (isPieceLocationValid(currentPieceMoved)) {
-        currentPieceOption = Some(currentPieceMoved)
-      } else {
-        addPieceToStack(currentPiece)
-        currentPieceOption = None
+      executeAndPublish {
+        val currentPiece = currentPieceOption.get
+        val currentPieceMoved =
+          currentPiece.cloneWithNewCenterCoord(
+            TetrisCoordinate(
+              currentPiece.centerRow + 1,
+              currentPiece.centerColumn))
+        if (isPieceLocationValid(currentPieceMoved)) {
+          currentPieceOption = Some(currentPieceMoved)
+        } else {
+          addPieceToStack(currentPiece)
+          currentPieceOption = None
+        }
       }
-      publishTetrisModelEvent
     }
   }
 
   def dropCurrentPiece {
     if (gameRunning) {
-      deferTetrisModelEvents = true
-
-      while (currentPieceOption.isDefined) {
-        moveCurrentPieceDown
+      executeAndPublish {
+        while (currentPieceOption.isDefined) {
+          moveCurrentPieceDown
+        }
       }
-
-      deferTetrisModelEvents = false
-
-      publishTetrisModelEvent
     }
   }
 
   def moveCurrentPieceLeft {
     if (gameRunning && currentPieceOption.isDefined) {
-      val currentPiece = currentPieceOption.get
-      val currentPieceMoved =
-        currentPiece.cloneWithNewCenterCoord(
-          TetrisCoordinate(
-            currentPiece.centerRow,
-            currentPiece.centerColumn - 1))
-      if (isPieceLocationValid(currentPieceMoved)) {
-        currentPieceOption = Some(currentPieceMoved)
-        publishTetrisModelEvent
+      executeAndPublish {
+        val currentPiece = currentPieceOption.get
+        val currentPieceMoved =
+          currentPiece.cloneWithNewCenterCoord(
+            TetrisCoordinate(
+              currentPiece.centerRow,
+              currentPiece.centerColumn - 1))
+        if (isPieceLocationValid(currentPieceMoved)) {
+          currentPieceOption = Some(currentPieceMoved)
+        }
       }
     }
   }
 
   def moveCurrentPieceRight {
     if (gameRunning && currentPieceOption.isDefined) {
-      val currentPiece = currentPieceOption.get
-      val currentPieceMoved =
-        currentPiece.cloneWithNewCenterCoord(
-          TetrisCoordinate(
-            currentPiece.centerRow,
-            currentPiece.centerColumn + 1))
-      if (isPieceLocationValid(currentPieceMoved)) {
-        currentPieceOption = Some(currentPieceMoved)
-        publishTetrisModelEvent
+      executeAndPublish {
+        val currentPiece = currentPieceOption.get
+        val currentPieceMoved =
+          currentPiece.cloneWithNewCenterCoord(
+            TetrisCoordinate(
+              currentPiece.centerRow,
+              currentPiece.centerColumn + 1))
+        if (isPieceLocationValid(currentPieceMoved)) {
+          currentPieceOption = Some(currentPieceMoved)
+        }
       }
     }
   }
 
   def rotateCurrentPiece {
     if (gameRunning && currentPieceOption.isDefined) {
-      val currentPiece = currentPieceOption.get
-      val currentPieceRotated =
-        currentPiece.cloneWithNextOrientation
-      if (isPieceLocationValid(currentPieceRotated)) {
-        currentPieceOption = Some(currentPieceRotated)
-        publishTetrisModelEvent
+      executeAndPublish {
+        val currentPiece = currentPieceOption.get
+        val currentPieceRotated =
+          currentPiece.cloneWithNextOrientation
+        if (isPieceLocationValid(currentPieceRotated)) {
+          currentPieceOption = Some(currentPieceRotated)
+        }
       }
     }
   }
 
   def togglePause {
-    isPaused = !isPaused
-    publishTetrisModelEvent
+    executeAndPublish {
+      isPaused = !isPaused
+    }
   }
 
   def paused: Boolean = isPaused
@@ -477,8 +474,15 @@ class TetrisModel extends Publisher {
 
   private def gameRunning: Boolean = ((!isPaused) && (!isGameOver))
 
+  private def executeAndPublish(op: => Unit) {
+    deferPublishCount += 1
+    op
+    deferPublishCount -= 1
+    publishTetrisModelEvent
+  }
+
   private def publishTetrisModelEvent {
-    if (!deferTetrisModelEvents) {
+    if (deferPublishCount == 0) {
       updateDrawableCells
       publish(TetrisModelEvent())
     }
