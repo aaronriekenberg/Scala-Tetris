@@ -728,7 +728,7 @@ class TetrisController extends Reactor {
   listenTo(tetrisPanel.keys)
 
   new Timer(250, new ActionListener {
-    def actionPerformed(e: ActionEvent) {
+    override def actionPerformed(e: ActionEvent) {
       tetrisModel.periodicUpdate
     }
   }).start
