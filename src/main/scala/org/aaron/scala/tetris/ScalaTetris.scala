@@ -404,7 +404,7 @@ class TetrisModel extends Publisher {
   }
 
   def dropCurrentPiece {
-    if (gameRunning) {
+    if (gameRunning && currentPieceOption.isDefined) {
       executeAndPublish {
         while (currentPieceOption.isDefined) {
           moveCurrentPieceDown
