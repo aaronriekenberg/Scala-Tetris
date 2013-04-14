@@ -80,6 +80,12 @@ abstract class TetrisPiece {
   def cloneWithNewCenterCoord(newCenterCoord: TetrisCoordinate): TetrisPiece =
     makeTetrisPiece(newCenterCoord, orientation)
 
+  def cloneWithNewCenterRow(newCenterRow: Int): TetrisPiece =
+    cloneWithNewCenterCoord(TetrisCoordinate(newCenterRow, centerColumn))
+
+  def cloneWithNewCenterColumn(newCenterColumn: Int): TetrisPiece =
+    cloneWithNewCenterCoord(TetrisCoordinate(centerRow, newCenterColumn))
+
 }
 
 class SquarePiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
@@ -389,10 +395,8 @@ class TetrisModel extends Publisher {
       executeAndPublish {
         val currentPiece = currentPieceOption.get
         val currentPieceMoved =
-          currentPiece.cloneWithNewCenterCoord(
-            TetrisCoordinate(
-              currentPiece.centerRow + 1,
-              currentPiece.centerColumn))
+          currentPiece.cloneWithNewCenterRow(
+            currentPiece.centerRow + 1)
         if (isPieceLocationValid(currentPieceMoved)) {
           currentPieceOption = Some(currentPieceMoved)
         } else {
@@ -418,10 +422,8 @@ class TetrisModel extends Publisher {
       executeAndPublish {
         val currentPiece = currentPieceOption.get
         val currentPieceMoved =
-          currentPiece.cloneWithNewCenterCoord(
-            TetrisCoordinate(
-              currentPiece.centerRow,
-              currentPiece.centerColumn - 1))
+          currentPiece.cloneWithNewCenterColumn(
+            currentPiece.centerColumn - 1)
         if (isPieceLocationValid(currentPieceMoved)) {
           currentPieceOption = Some(currentPieceMoved)
         }
@@ -434,10 +436,8 @@ class TetrisModel extends Publisher {
       executeAndPublish {
         val currentPiece = currentPieceOption.get
         val currentPieceMoved =
-          currentPiece.cloneWithNewCenterCoord(
-            TetrisCoordinate(
-              currentPiece.centerRow,
-              currentPiece.centerColumn + 1))
+          currentPiece.cloneWithNewCenterColumn(
+            currentPiece.centerColumn + 1)
         if (isPieceLocationValid(currentPieceMoved)) {
           currentPieceOption = Some(currentPieceMoved)
         }
