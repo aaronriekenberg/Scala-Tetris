@@ -381,34 +381,35 @@ class TetrisModel extends Publisher {
   def periodicUpdate {
     if (gameRunning) {
       executeAndPublish {
-        if (currentPieceOption.isEmpty) {
-          addNewPiece
-        } else {
-          moveCurrentPieceDown
+        currentPieceOption match {
+          case Some(_) => moveCurrentPieceDown
+          case None => addNewPiece
         }
       }
     }
   }
 
   def moveCurrentPieceDown {
-    if (gameRunning && currentPieceOption.isDefined) {
+    if (gameRunning) {
       executeAndPublish {
-        val currentPiece = currentPieceOption.get
-        val currentPieceMoved =
-          currentPiece.cloneWithNewCenterRow(
-            currentPiece.centerRow + 1)
-        if (isPieceLocationValid(currentPieceMoved)) {
-          currentPieceOption = Some(currentPieceMoved)
-        } else {
-          addPieceToStack(currentPiece)
-          currentPieceOption = None
-        }
+        currentPieceOption = currentPieceOption.flatMap(
+          currentPiece => {
+            val currentPieceMoved =
+              currentPiece.cloneWithNewCenterRow(
+                currentPiece.centerRow + 1)
+            if (isPieceLocationValid(currentPieceMoved)) {
+              Some(currentPieceMoved)
+            } else {
+              addPieceToStack(currentPiece)
+              None
+            }
+          })
       }
     }
   }
 
   def dropCurrentPiece {
-    if (gameRunning && currentPieceOption.isDefined) {
+    if (gameRunning) {
       executeAndPublish {
         while (currentPieceOption.isDefined) {
           moveCurrentPieceDown
@@ -418,42 +419,54 @@ class TetrisModel extends Publisher {
   }
 
   def moveCurrentPieceLeft {
-    if (gameRunning && currentPieceOption.isDefined) {
+    if (gameRunning) {
       executeAndPublish {
-        val currentPiece = currentPieceOption.get
-        val currentPieceMoved =
-          currentPiece.cloneWithNewCenterColumn(
-            currentPiece.centerColumn - 1)
-        if (isPieceLocationValid(currentPieceMoved)) {
-          currentPieceOption = Some(currentPieceMoved)
-        }
+        currentPieceOption = currentPieceOption.flatMap(
+          currentPiece => {
+            val currentPieceMoved =
+              currentPiece.cloneWithNewCenterColumn(
+                currentPiece.centerColumn - 1)
+            if (isPieceLocationValid(currentPieceMoved)) {
+              Some(currentPieceMoved)
+            } else {
+              Some(currentPiece)
+            }
+          })
       }
     }
   }
 
   def moveCurrentPieceRight {
-    if (gameRunning && currentPieceOption.isDefined) {
+    if (gameRunning) {
       executeAndPublish {
-        val currentPiece = currentPieceOption.get
-        val currentPieceMoved =
-          currentPiece.cloneWithNewCenterColumn(
-            currentPiece.centerColumn + 1)
-        if (isPieceLocationValid(currentPieceMoved)) {
-          currentPieceOption = Some(currentPieceMoved)
-        }
+        currentPieceOption = currentPieceOption.flatMap(
+          currentPiece => {
+            val currentPieceMoved =
+              currentPiece.cloneWithNewCenterColumn(
+                currentPiece.centerColumn + 1)
+            if (isPieceLocationValid(currentPieceMoved)) {
+              Some(currentPieceMoved)
+            } else {
+              Some(currentPiece)
+            }
+          })
       }
     }
   }
 
   def rotateCurrentPiece {
-    if (gameRunning && currentPieceOption.isDefined) {
+    if (gameRunning) {
       executeAndPublish {
-        val currentPiece = currentPieceOption.get
-        val currentPieceRotated =
-          currentPiece.cloneWithNextOrientation
-        if (isPieceLocationValid(currentPieceRotated)) {
-          currentPieceOption = Some(currentPieceRotated)
-        }
+        currentPieceOption = currentPieceOption.flatMap(
+          currentPiece => {
+            val currentPieceMoved =
+              currentPiece.cloneWithNextOrientation
+            if (isPieceLocationValid(currentPieceMoved)) {
+              Some(currentPieceMoved)
+            } else {
+              Some(currentPiece)
+            }
+          })
       }
     }
   }
@@ -491,11 +504,12 @@ class TetrisModel extends Publisher {
   private def updateDrawableCells {
     drawableCellsBuffer.clear
 
-    if (currentPieceOption.isDefined) {
-      val currentPiece = currentPieceOption.get
-      drawableCellsBuffer ++=
-        currentPiece.cellCoordinates.map(coord => Pair(coord, currentPiece.color))
-    }
+    currentPieceOption.foreach(
+      currentPiece => {
+        drawableCellsBuffer ++=
+          currentPiece.cellCoordinates.map(
+            Pair(_, currentPiece.color))
+      })
 
     for {
       row <- TetrisConstants.rowsRange
