@@ -514,10 +514,10 @@ class TetrisModel extends Publisher {
     for {
       row <- TetrisConstants.rowsRange
       column <- TetrisConstants.columnsRange
-      if stackCells(row)(column).isDefined
+      stackCellColor <- stackCells(row)(column)
     } drawableCellsBuffer +=
       Pair(TetrisCoordinate(row, column),
-        stackCells(row)(column).get)
+        stackCellColor)
   }
 
   private def addNewPiece {
