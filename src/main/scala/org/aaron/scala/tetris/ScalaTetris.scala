@@ -572,10 +572,6 @@ class TetrisPanel(tetrisModel: TetrisModel) extends BorderPanel {
 
   add(new TetrisScorePanel(tetrisModel), BorderPanel.Position.South)
 
-  def setupFocus {
-    tetrisGamePanel.requestFocusInWindow()
-  }
-
 }
 
 class TetrisScorePanel(tetrisModel: TetrisModel) extends FlowPanel {
@@ -731,7 +727,7 @@ class TetrisController extends Reactor {
   }
 
   def setupFocus {
-    tetrisPanel.requestFocus
+    tetrisPanel.requestFocusInWindow
   }
 
 }
@@ -748,8 +744,6 @@ object ScalaTetris extends SimpleSwingApplication {
 
     contents = tetrisContoller.tetrisPanel
 
-    tetrisContoller.setupFocus
-
     menuBar = new MenuBar {
       contents += new Menu("Game") {
         contents += new MenuItem(Action("Pause") { tetrisContoller.togglePause })
@@ -758,6 +752,8 @@ object ScalaTetris extends SimpleSwingApplication {
         contents += new MenuItem(Action("Exit") { sys.exit(0) })
       }
     }
+
+    tetrisContoller.setupFocus
 
   }
 
