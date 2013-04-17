@@ -605,9 +605,8 @@ class TetrisScorePanel(tetrisModel: TetrisModel) extends FlowPanel {
 
 class TetrisGamePanel(tetrisModel: TetrisModel) extends Panel {
 
-  private val cellXCoordBuffer = ArrayBuffer.fill(TetrisConstants.numColumns)(0)
-
-  private val cellYCoordBuffer = ArrayBuffer.fill(TetrisConstants.numRows)(0)
+  private val tetrisCoordinateToPixelRectangle = ArrayBuffer.fill(
+    TetrisConstants.numRows, TetrisConstants.numColumns)(new Rectangle)
 
   private var previousHeight = 0
 
@@ -634,34 +633,34 @@ class TetrisGamePanel(tetrisModel: TetrisModel) extends Panel {
 
   private def recomputeCellLocations {
     if ((size.width != previousWidth) || (size.height != previousHeight)) {
-      cellXCoordBuffer.clear
-      var currentXCoord = 0
       val normalWidthPixels = size.width / TetrisConstants.numColumns
       val extraWidthPixels = size.width % TetrisConstants.numColumns
-      for (i <- TetrisConstants.columnsRange) {
-        cellXCoordBuffer += currentXCoord
-        val width =
-          if (i < extraWidthPixels) {
-            normalWidthPixels + 1
-          } else {
-            normalWidthPixels
-          }
-        currentXCoord += width
-      }
-
-      cellYCoordBuffer.clear
-      var currentYCoord = 0
       val normalHeightPixels = size.height / TetrisConstants.numRows
       val extraHeightPixels = size.height % TetrisConstants.numRows
-      for (i <- TetrisConstants.rowsRange) {
-        cellYCoordBuffer += currentYCoord
-        val height =
-          if (i < extraHeightPixels) {
+
+      var currentYCoord = 0
+      for (row <- TetrisConstants.rowsRange) {
+        val rowHeight =
+          if (row < extraHeightPixels) {
             normalHeightPixels + 1
           } else {
             normalHeightPixels
           }
-        currentYCoord += height
+        var currentXCoord = 0
+        for (column <- TetrisConstants.columnsRange) {
+          val rectangle = tetrisCoordinateToPixelRectangle(row)(column)
+          rectangle.x = currentXCoord
+          rectangle.y = currentYCoord
+          rectangle.width =
+            if (column < extraWidthPixels) {
+              normalWidthPixels + 1
+            } else {
+              normalWidthPixels
+            }
+          rectangle.height = rowHeight
+          currentXCoord += rectangle.width
+        }
+        currentYCoord += rowHeight
       }
 
       previousWidth = size.width
@@ -669,34 +668,10 @@ class TetrisGamePanel(tetrisModel: TetrisModel) extends Panel {
     }
   }
 
-  private def getCellRectangle(coord: TetrisCoordinate): Rectangle = {
-    val rectangle = new Rectangle
-    val row = coord.row
-    val column = coord.column
-
-    rectangle.x = cellXCoordBuffer(column)
-    rectangle.width =
-      if (column >= (TetrisConstants.numColumns - 1)) {
-        size.width - cellXCoordBuffer(column)
-      } else {
-        cellXCoordBuffer(column + 1) - cellXCoordBuffer(column)
-      }
-
-    rectangle.y = cellYCoordBuffer(row)
-    rectangle.height =
-      if (row >= (TetrisConstants.numRows - 1)) {
-        size.height - cellYCoordBuffer(row)
-      } else {
-        cellYCoordBuffer(row + 1) - cellYCoordBuffer(row)
-      }
-
-    rectangle
-  }
-
   private def paintCell(g: Graphics2D, coord: TetrisCoordinate, color: Color) {
     val oldColor = g.getColor
     g.setColor(color)
-    val cellRect = getCellRectangle(coord)
+    val cellRect = tetrisCoordinateToPixelRectangle(coord.row)(coord.column)
     g.fillRect(cellRect.x, cellRect.y, cellRect.width, cellRect.height)
     g.setColor(Color.BLACK)
     g.drawRect(cellRect.x, cellRect.y, cellRect.width, cellRect.height)
