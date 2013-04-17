@@ -641,7 +641,9 @@ class TetrisGamePanel(tetrisModel: TetrisModel) extends Panel {
       var currentYCoord = 0
       for (row <- TetrisConstants.rowsRange) {
         val rowHeight =
-          if (row < extraHeightPixels) {
+          if (row >= (TetrisConstants.numRows - 1)) {
+            size.height - currentYCoord - 1
+          } else if (row < extraHeightPixels) {
             normalHeightPixels + 1
           } else {
             normalHeightPixels
@@ -652,7 +654,9 @@ class TetrisGamePanel(tetrisModel: TetrisModel) extends Panel {
           rectangle.x = currentXCoord
           rectangle.y = currentYCoord
           rectangle.width =
-            if (column < extraWidthPixels) {
+            if (column >= (TetrisConstants.numColumns - 1)) {
+              size.width - currentXCoord - 1
+            } else if (column < extraWidthPixels) {
               normalWidthPixels + 1
             } else {
               normalWidthPixels
