@@ -633,17 +633,15 @@ class TetrisGamePanel(tetrisModel: TetrisModel) extends Panel {
 
   private def recomputeCellLocations {
     if ((size.width != previousWidth) || (size.height != previousHeight)) {
-      val normalWidthPixels = size.width / TetrisConstants.numColumns
-      val extraWidthPixels = size.width % TetrisConstants.numColumns
-      val normalHeightPixels = size.height / TetrisConstants.numRows
-      val extraHeightPixels = size.height % TetrisConstants.numRows
+      val normalWidthPixels = (size.width - 1) / TetrisConstants.numColumns
+      val extraWidthPixels = (size.width - 1) % TetrisConstants.numColumns
+      val normalHeightPixels = (size.height - 1) / TetrisConstants.numRows
+      val extraHeightPixels = (size.height - 1) % TetrisConstants.numRows
 
       var currentYCoord = 0
       for (row <- TetrisConstants.rowsRange) {
         val rowHeight =
-          if (row >= (TetrisConstants.numRows - 1)) {
-            size.height - currentYCoord - 1
-          } else if (row < extraHeightPixels) {
+          if (row < extraHeightPixels) {
             normalHeightPixels + 1
           } else {
             normalHeightPixels
@@ -654,9 +652,7 @@ class TetrisGamePanel(tetrisModel: TetrisModel) extends Panel {
           rectangle.x = currentXCoord
           rectangle.y = currentYCoord
           rectangle.width =
-            if (column >= (TetrisConstants.numColumns - 1)) {
-              size.width - currentXCoord - 1
-            } else if (column < extraWidthPixels) {
+            if (column < extraWidthPixels) {
               normalWidthPixels + 1
             } else {
               normalWidthPixels
