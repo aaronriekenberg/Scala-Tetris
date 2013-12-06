@@ -72,7 +72,9 @@ abstract class TetrisPiece {
   def nextOrientation: Int = (orientation + 1) % numOrientations
 
   def makeTetrisPiece(
-    centerCoord: TetrisCoordinate, orientation: Int): TetrisPiece
+    centerCoord: TetrisCoordinate, orientation: Int): TetrisPiece =
+    getClass.getConstructor(centerCoord.getClass(), orientation.getClass()).
+      newInstance(centerCoord, orientation.asInstanceOf[Object])
 
   def cloneWithNextOrientation: TetrisPiece =
     makeTetrisPiece(centerCoord, nextOrientation)
@@ -101,9 +103,6 @@ class SquarePiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
       TetrisCoordinate(centerRow + 1, centerColumn + 1))
 
   val numOrientations = 1
-
-  def makeTetrisPiece(centerCoord: TetrisCoordinate, orientation: Int): SquarePiece =
-    new SquarePiece(centerCoord, orientation)
 
 }
 
@@ -143,9 +142,6 @@ class LinePiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
 
   val numOrientations = 4
 
-  def makeTetrisPiece(centerCoord: TetrisCoordinate, orientation: Int): LinePiece =
-    new LinePiece(centerCoord, orientation)
-
 }
 
 class TPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
@@ -184,9 +180,6 @@ class TPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
 
   val numOrientations = 4
 
-  def makeTetrisPiece(centerCoord: TetrisCoordinate, orientation: Int): TPiece =
-    new TPiece(centerCoord, orientation)
-
 }
 
 class LeftZPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
@@ -213,9 +206,6 @@ class LeftZPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
 
   val numOrientations = 2
 
-  def makeTetrisPiece(centerCoord: TetrisCoordinate, orientation: Int): LeftZPiece =
-    new LeftZPiece(centerCoord, orientation)
-
 }
 
 class RightZPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
@@ -241,9 +231,6 @@ class RightZPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
   }
 
   val numOrientations = 2
-
-  def makeTetrisPiece(centerCoord: TetrisCoordinate, orientation: Int): RightZPiece =
-    new RightZPiece(centerCoord, orientation)
 
 }
 
@@ -283,9 +270,6 @@ class LeftLPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
 
   val numOrientations = 4
 
-  def makeTetrisPiece(centerCoord: TetrisCoordinate, orientation: Int): LeftLPiece =
-    new LeftLPiece(centerCoord, orientation)
-
 }
 
 class RightLPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
@@ -323,9 +307,6 @@ class RightLPiece(val centerCoord: TetrisCoordinate, val orientation: Int = 0)
   }
 
   val numOrientations = 4
-
-  def makeTetrisPiece(centerCoord: TetrisCoordinate, orientation: Int): RightLPiece =
-    new RightLPiece(centerCoord, orientation)
 
 }
 
