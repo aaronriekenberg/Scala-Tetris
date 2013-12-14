@@ -689,6 +689,9 @@ class TetrisController extends Reactor {
 
     case KeyPressed(_, Key.P, _, _) =>
       tetrisModel.togglePause
+
+    case KeyPressed(_, Key.R, _, _) =>
+      tetrisModel.reset
   }
 
   listenTo(tetrisPanel.keys)
